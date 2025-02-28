@@ -1,0 +1,16 @@
+groups:
+  - name: host-monitoring
+    rules:
+      - alert: HighCpuUsage
+        expr: >-
+          100 - (
+            avg by (instance) (
+              rate(node_cpu_seconds_total{mode="idle"}[1m])
+            ) * 100
+          ) > 60
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU 使用率过高: {{ $value }}%"
+          description: "实例 {{ $labels.instance }} 的 CPU 使用率持续超过 60%"
